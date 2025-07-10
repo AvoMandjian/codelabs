@@ -10,7 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../firebase_options.dart';
-import '../services/gemini_tools.dart';
+import '../services/flutter_actions_tools.dart';
 import 'system_prompt.dart';
 
 part 'gemini.g.dart';

@@ -11,7 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../providers/gemini.dart';
-import 'gemini_tools.dart';
+import 'flutter_actions_tools.dart';
 
 part 'gemini_chat_service.g.dart';
 

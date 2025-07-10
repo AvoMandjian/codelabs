@@ -1,0 +1,16 @@
+{
+    "results": [
+        {
+            "alternatives": [
+                {
+                    "transcript": "give me a flutter action we chose a message",
+                    "confidence": 0.9193107
+                }
+            ],
+            "resultEndTime": "4.230s",
+            "languageCode": "en-us"
+        }
+    ],
+    "totalBilledTime": "5s",
+    "requestId": "3226856330836879954"
+}
