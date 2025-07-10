@@ -8,6 +8,7 @@ import 'dart:convert';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:cloud_text_to_speech/cloud_text_to_speech.dart';
 import 'package:colorist_ui/colorist_ui.dart';
+import 'package:colorist_ui/src/cubit/color_cubit.dart';
 import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -53,7 +54,10 @@ void main() async {
 
   runApp(
     ProviderScope(
-      child: MultiBlocProvider(providers: [], child: MainApp()),
+      child: MultiBlocProvider(
+        providers: [BlocProvider<ColorCubit>(create: (_) => ColorCubit())],
+        child: MainApp(),
+      ),
     ),
   );
 }

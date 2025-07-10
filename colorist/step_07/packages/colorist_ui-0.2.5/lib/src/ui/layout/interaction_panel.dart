@@ -47,8 +47,8 @@ class InteractionPanel extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           switch (Device.of(context)) {
-            DeviceType.phone => const Center(child: ColorDisplay()),
-            DeviceType.desktop => const ColorDisplay(),
+            DeviceType.phone => const Center(child: ColorDisplayCubit()),
+            DeviceType.desktop => const ColorDisplayCubit(),
           },
 
           const DeviceSizedBox(phoneHeight: 12, desktopHeight: 16),

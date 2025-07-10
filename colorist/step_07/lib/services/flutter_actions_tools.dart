@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:colorist_ui/colorist_ui.dart';
+import 'package:colorist_ui/src/cubit/color_cubit.dart';
 import 'package:firebase_ai/firebase_ai.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -19,6 +20,16 @@ class FlutterActionsTools {
   FlutterActionsTools(this.ref);
 
   final Ref ref;
+
+  FunctionDeclaration get setColorFuncDecl => FunctionDeclaration(
+    'set_color',
+    'Set the color of the display square based on red, green, and blue values.',
+    parameters: {
+      'red': Schema.number(description: 'Red component value (0.0 - 1.0)'),
+      'green': Schema.number(description: 'Green component value (0.0 - 1.0)'),
+      'blue': Schema.number(description: 'Blue component value (0.0 - 1.0)'),
+    },
+  );
 
   /// Central registry of all Flutter Action FunctionDeclarations.
   static final Map<String, FunctionDeclaration> _actionDeclarations = {
@@ -319,8 +330,36 @@ Supported values for "flutter_action":
   /// Returns all tools (FunctionDeclarations).
 
   List<Tool> get tools => [
-    Tool.functionDeclarations([..._actionDeclarations.values]),
+    Tool.functionDeclarations([
+      ..._actionDeclarations.values,
+      setColorFuncDecl,
+    ]),
   ];
+  Map<String, Object?> handleSetColor(Map<String, Object?> arguments) {
+    // TODO: Remove this after full migration to Cubit
+    // final colorStateNotifier = ref.read(colorStateNotifierProvider.notifier);
+    final red = (arguments['red'] as num).toDouble();
+    final green = (arguments['green'] as num).toDouble();
+    final blue = (arguments['blue'] as num).toDouble();
+    // Use Cubit for color update if possible
+    Map<String, Object?> currentColorMap;
+    try {
+      // Try to get the cubit from a globally accessible key or context
+      final cubit = ColorCubit.globalInstance;
+      cubit.updateColor(red: red, green: green, blue: blue);
+      currentColorMap = cubit.state.currentColor.toLLMContextMap();
+    } catch (e) {
+      // Fallback to Riverpod notifier if Cubit is not available
+      final colorStateNotifier = ref.read(colorStateNotifierProvider.notifier);
+      colorStateNotifier.updateColor(red: red, green: green, blue: blue);
+      currentColorMap = colorStateNotifier.state.currentColor.toLLMContextMap();
+    }
+    final functionResults = {'success': true, 'current_color': currentColorMap};
+
+    final logStateNotifier = ref.read(logStateNotifierProvider.notifier);
+    logStateNotifier.logFunctionResults(functionResults);
+    return functionResults;
+  }
 
   Map<String, Object?> handleFunctionCall(
     String functionName,
@@ -329,6 +368,7 @@ Supported values for "flutter_action":
     final logStateNotifier = ref.read(logStateNotifierProvider.notifier);
     logStateNotifier.logFunctionCall(functionName, arguments);
     return switch (functionName) {
+      'set_color' => handleSetColor(arguments),
       'navigate' => handleNavigate(arguments),
       'drawer' => handleDrawer(arguments),
       'loader' => handleLoader(arguments),
