@@ -99,7 +99,7 @@ class MainApp extends ConsumerWidget {
                     //   path: 'aFullPath/myFile.m4a',
                     // );
                     final String fileContents = await XFile(
-                      'assets/fire.json',
+                      'assets/firebase.json',
                     ).readAsString();
                     serviceAccount = ServiceAccount.fromString(fileContents);
 
@@ -132,37 +132,32 @@ class MainApp extends ConsumerWidget {
                       IconButton(
                         icon: const Icon(Icons.stop_circle),
                         onPressed: () async {
-                          try {
-                            await _waveController.stopRecording();
-                            final fileToAdd = await XFile(
-                              _waveController.file!.path,
-                            ).readAsBytes();
+                          await _waveController.stopRecording();
+                          final fileToAdd = await XFile(
+                            _waveController.file!.path,
+                          ).readAsBytes();
 
-                            final response = await http.post(
-                              Uri.parse(
-                                'https://speech.googleapis.com/v1/speech:recognize?key=${dotenv.env['GOOGLEAPIKEY'] ?? ''}',
-                              ),
-                              headers: {'Content-Type': 'application/json'},
-                              body: jsonEncode({
-                                "config": {
-                                  "encoding": "LINEAR16",
-                                  "languageCode": "en-US",
-                                },
-                                "audio": {"content": base64Encode(fileToAdd)},
-                              }),
-                            );
+                          final response = await http.post(
+                            Uri.parse(
+                              'https://speech.googleapis.com/v1/speech:recognize?key=${dotenv.env['GOOGLEAPIKEY'] ?? ''}',
+                            ),
+                            headers: {'Content-Type': 'application/json'},
+                            body: jsonEncode({
+                              "config": {
+                                "encoding": "LINEAR16",
+                                "languageCode": "en-US",
+                              },
+                              "audio": {"content": base64Encode(fileToAdd)},
+                            }),
+                          );
 
-                            await ref
-                                .read(geminiChatServiceProvider)
-                                .sendMessage(
-                                  jsonDecode(
-                                    response.body,
-                                  )['results'][0]['alternatives'][0]['transcript'],
-                                );
-                          } catch (e) {
-                            print(e);
-                            print(e);
-                          }
+                          await ref
+                              .read(geminiChatServiceProvider)
+                              .sendMessage(
+                                jsonDecode(
+                                  response.body,
+                                )['results'][0]['alternatives'][0]['transcript'],
+                              );
                         },
                       ),
                       SizedBox(

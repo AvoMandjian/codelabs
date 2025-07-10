@@ -23,6 +23,7 @@ dependencies:
   cross_file: ^0.3.4+2
   audioplayers: ^6.5.0
   flutter_dotenv: ^5.2.1
+  http: ^1.4.0
 
 dev_dependencies:
   flutter_test:
