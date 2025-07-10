@@ -10,6 +10,7 @@ import 'package:cloud_text_to_speech/cloud_text_to_speech.dart';
 import 'package:colorist_ui/colorist_ui.dart';
 import 'package:cross_file/cross_file.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_speech/google_speech.dart';
@@ -50,7 +51,11 @@ void main() async {
       .toList(growable: false)
       .first;
 
-  runApp(ProviderScope(child: MainApp()));
+  runApp(
+    ProviderScope(
+      child: MultiBlocProvider(providers: [], child: MainApp()),
+    ),
+  );
 }
 
 class MainApp extends ConsumerWidget {
