@@ -32,7 +32,7 @@ class LogPanel extends StatelessWidget {
             DeviceType.desktop => TextAlign.start,
           },
         ),
-        const Expanded(child: LogView()),
+        const Expanded(child: LogViewCubit()),
       ],
     ),
   );

@@ -3,5 +3,5 @@
 // found in the LICENSE file.
 
 export 'color_display_cubit.dart';
-export 'color_history.dart';
+export 'color_history_cubit.dart';
 export 'color_info.dart';

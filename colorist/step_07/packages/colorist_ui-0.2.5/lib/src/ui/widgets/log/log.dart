@@ -3,4 +3,4 @@
 // found in the LICENSE file.
 
 export 'log_entry_widget.dart';
-export 'log_view.dart';
+export 'log_view_cubit.dart';

@@ -4,6 +4,7 @@
 
 import 'package:colorist_ui/colorist_ui.dart';
 import 'package:colorist_ui/src/cubit/color_cubit.dart';
+import 'package:colorist_ui/src/cubit/log_cubit.dart';
 import 'package:firebase_ai/firebase_ai.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -497,14 +498,12 @@ Supported values for "flutter_action":
       _logAndReturn(arguments);
 
   Map<String, Object?> _logAndReturn(Map<String, Object?> arguments) {
-    final logStateNotifier = ref.read(logStateNotifierProvider.notifier);
-    logStateNotifier.logFunctionResults(arguments);
+    LogCubit.globalInstance.logFunctionResults(arguments);
     return {'success': true, ...arguments};
   }
 
   Map<String, Object?> handleUnknownFunction(String functionName) {
-    final logStateNotifier = ref.read(logStateNotifierProvider.notifier);
-    logStateNotifier.logWarning('Unsupported function call $functionName');
+    LogCubit.globalInstance.logWarning('Unsupported function call $functionName');
     return {
       'success': false,
       'reason': 'Unsupported function call $functionName',

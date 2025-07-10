@@ -11,13 +11,14 @@ import '../../models/models.dart';
 import '../utils/utils.dart';
 import '../widgets/chat/chat.dart';
 import '../widgets/color/color.dart';
+import '../widgets/chat/messages_list_cubit.dart';
 
 final _log = Logger('InteractionPanel');
 
 /// A panel displaying interaction elements for a color selection application.
 ///
 /// This widget arranges a [ColorDisplay], [ColorInfo], [ColorHistory],
-/// a chat message list ([MessagesList]), and a chat input field ([ChatInput])
+/// a chat message list ([MessagesListCubit]), and a chat input field ([ChatInput])
 /// in a column.  The layout adapts to different screen sizes (phone vs. desktop)
 /// using the [Device] utility.
 class InteractionPanel extends StatelessWidget {
@@ -54,7 +55,7 @@ class InteractionPanel extends StatelessWidget {
           const DeviceSizedBox(phoneHeight: 12, desktopHeight: 16),
           const ColorInfo(),
           const DeviceSizedBox(phoneHeight: 12, desktopHeight: 16),
-          ColorHistory(
+          ColorHistoryCubit(
             notifyColorSelection:
                 notifyColorSelection ??
                 (color) {
@@ -67,7 +68,7 @@ class InteractionPanel extends StatelessWidget {
 
           // Chat section
           Expanded(
-            child: MessagesList(onPressedVoiceOutput: onPressedVoiceOutput),
+            child: MessagesListCubit(onPressedVoiceOutput: onPressedVoiceOutput),
           ),
 
           // Input section

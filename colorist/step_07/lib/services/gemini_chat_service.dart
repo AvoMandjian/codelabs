@@ -12,6 +12,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../providers/gemini.dart';
 import 'flutter_actions_tools.dart';
+import 'package:colorist_ui/src/cubit/chat_cubit.dart';
 
 part 'gemini_chat_service.g.dart';
 
@@ -30,8 +31,9 @@ class GeminiChatService {
   Future<void> sendMessage(String message) async {
     final chatSession = await ref.read(chatSessionProvider.future);
     final conversationState = ref.read(conversationStateProvider);
-    final chatStateNotifier = ref.read(chatStateNotifierProvider.notifier);
     final logStateNotifier = ref.read(logStateNotifierProvider.notifier);
+    // Use Cubit for chat state mutations
+    final chatCubit = ChatCubit.globalInstance;
 
     if (conversationState == ConversationState.busy) {
       logStateNotifier.logWarning(
@@ -45,9 +47,9 @@ class GeminiChatService {
       conversationStateProvider.notifier,
     );
     conversationStateNotifier.state = ConversationState.busy;
-    chatStateNotifier.addUserMessage(message);
+    chatCubit.addUserMessage(message);
     logStateNotifier.logUserText(message);
-    final llmMessage = chatStateNotifier.createLlmMessage();
+    final llmMessage = chatCubit.createLlmMessage();
     try {
       final responseStream = chatSession.sendMessageStream(
         Content.text(message),
@@ -57,13 +59,13 @@ class GeminiChatService {
       }
     } catch (e, st) {
       logStateNotifier.logError(e, st: st);
-      chatStateNotifier.appendToMessage(
+      chatCubit.appendToMessage(
         llmMessage.id,
         "\nI'm sorry, I encountered an error processing your request. "
         "Please try again.",
       );
     } finally {
-      chatStateNotifier.finalizeMessage(llmMessage.id);
+      chatCubit.finalizeMessage(llmMessage.id);
       conversationStateNotifier.state = ConversationState.idle;
     }
   }
@@ -73,13 +75,14 @@ class GeminiChatService {
     String llmMessageId,
   ) async {
     final chatSession = await ref.read(chatSessionProvider.future);
-    final chatStateNotifier = ref.read(chatStateNotifierProvider.notifier);
     final logStateNotifier = ref.read(logStateNotifierProvider.notifier);
+    // Use Cubit for chat state mutations
+    final chatCubit = ChatCubit.globalInstance;
     final blockText = block.text;
 
     if (blockText != null) {
       logStateNotifier.logLlmText(blockText);
-      chatStateNotifier.appendToMessage(llmMessageId, blockText);
+      chatCubit.appendToMessage(llmMessageId, blockText);
     }
 
     if (block.functionCalls.isNotEmpty) {
@@ -100,7 +103,7 @@ class GeminiChatService {
         final responseText = response.text;
         if (responseText != null) {
           logStateNotifier.logLlmText(responseText);
-          chatStateNotifier.appendToMessage(llmMessageId, responseText);
+          chatCubit.appendToMessage(llmMessageId, responseText);
         }
       }
     }
